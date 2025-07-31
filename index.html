@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bellman's Equation Demo - Reinforcement Learning</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Bellman's Equation in Reinforcement Learning</h1>
+            <p class="header-subtitle">Interactive Grid World Demonstration</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Controls and Information -->
+            <div class="left-panel">
+                <!-- Algorithm Selection -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Algorithm Settings</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="form-group">
+                            <label class="form-label" for="algorithm-select">Algorithm:</label>
+                            <select id="algorithm-select" class="form-control">
+                                <option value="value-iteration">Value Iteration</option>
+                                <option value="q-learning">Q-Learning</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="gamma-slider">Discount Factor (γ): <span id="gamma-value">0.9</span></label>
+                            <input type="range" id="gamma-slider" class="form-control" min="0.1" max="0.99" step="0.01" value="0.9">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="alpha-slider">Learning Rate (α): <span id="alpha-value">0.1</span></label>
+                            <input type="range" id="alpha-slider" class="form-control" min="0.01" max="1.0" step="0.01" value="0.1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="iterations-input">Max Iterations:</label>
+                            <input type="number" id="iterations-input" class="form-control" min="1" max="1000" value="100">
+                        </div>
+                        
+                        <div class="button-group">
+                            <button id="run-btn" class="btn btn--primary">Run Algorithm</button>
+                            <button id="step-btn" class="btn btn--secondary">Step</button>
+                            <button id="reset-btn" class="btn btn--outline">Reset</button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="speed-slider">Animation Speed: <span id="speed-value">500ms</span></label>
+                            <input type="range" id="speed-slider" class="form-control" min="50" max="2000" step="50" value="500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bellman Equation Display -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Bellman Equation</h3>
+                    </div>
+                    <div class="card__body">
+                        <div id="equation-display" class="equation-display">
+                            <div class="equation">V(s) = max<sub>a</sub> Σ P(s'|s,a)[R(s,a,s') + γV(s')]</div>
+                        </div>
+                        <div id="current-calculation" class="current-calculation"></div>
+                    </div>
+                </div>
+
+                <!-- Statistics Panel -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Statistics</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Iteration:</span>
+                                <span id="current-iteration" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Status:</span>
+                                <span id="convergence-status" class="stat-value status--info">Ready</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Max Change:</span>
+                                <span id="max-change" class="stat-value">0.000</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Running:</span>
+                                <span id="running-status" class="stat-value">No</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel: Grid World -->
+            <div class="center-panel">
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Grid World Environment</h3>
+                        <div class="legend">
+                            <div class="legend-item">
+                                <div class="legend-color start-color"></div>
+                                <span>Start (0,0)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color goal-color"></div>
+                                <span>Goal (4,4)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color obstacle-color"></div>
+                                <span>Obstacles</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card__body">
+                        <div id="grid-container" class="grid-container">
+                            <!-- Grid will be generated by JavaScript -->
+                        </div>
+                        
+                        <div class="value-scale">
+                            <span>Low Value</span>
+                            <div class="color-gradient"></div>
+                            <span>High Value</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Q-Table and Policy -->
+            <div class="right-panel">
+                <!-- Policy Visualization -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Optimal Policy</h3>
+                    </div>
+                    <div class="card__body">
+                        <div id="policy-grid" class="policy-grid">
+                            <!-- Policy arrows will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q-Table Display -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Q-Values</h3>
+                    </div>
+                    <div class="card__body">
+                        <div id="selected-state-info" class="selected-state-info">
+                            <div class="selected-state-title">Click a cell to view Q-values</div>
+                        </div>
+                        <div id="q-table-display" class="q-table-display">
+                            <!-- Q-values will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Information -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Cell Information</h3>
+                    </div>
+                    <div class="card__body">
+                        <div id="cell-info" class="cell-info">
+                            <div class="info-placeholder">Hover over a cell for details</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
